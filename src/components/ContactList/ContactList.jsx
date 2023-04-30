@@ -1,35 +1,46 @@
-import PropTypes from 'prop-types';
-import ContactstItem from 'components/ContactItem/ContactsItem';
+import { memo } from 'react';
+import StyledItem from 'components/ContactItem/ContactsItem.styled';
 import StyledList from './ContactsList.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteContact } from 'redux/contactSlice';
+import StyledButton from 'components/ContactForm/Button.styled';
 
-const ContactsList = ({ contacts, onRemove }) => {
+
+function ContactsList () {
+  const contacts = useSelector(state => state.contacts);
+  const filter = useSelector(state => state.filter);
+  const dispatch = useDispatch();
+
+  let filtered = contacts;
+  if (filter !== '') {
+    const normalizedFilter = filter.toLowerCase();
+    filtered = contacts.filter(contact =>
+      // const filtered
+      contact.name.toLowerCase().includes(normalizedFilter)
+    );
+  }
+
+  const handleDelete = id => {
+    dispatch(deleteContact(id));
+  };
   return (
     <StyledList>
-      {contacts.map(contact => {
-        return (
-          <ContactstItem
-            key={contact.id}
-            id={contact.id}
-            name={contact.name}
-            number={contact.number}
-            onRemove={onRemove}
-          />
-        );
-      })}
-    </StyledList>
+    {filtered.map(({ name, number, id }) => {
+      return (
+        <StyledItem key={id}>
+          <span>{name}:</span>
+          <span>{number}</span>
+          <StyledButton type="button" onClick={() => handleDelete(id)}>
+            Delete
+          </StyledButton>
+        </StyledItem>
+      );
+    })}
+  </StyledList>
   );
 };
 
-ContactsList.propTypes = {
-  contacts: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      number: PropTypes.string.isRequired,
-      id: PropTypes.string.isRequired,
-    })
-  ),
 
-  onRemove: PropTypes.func.isRequired,
-};
 
-export default ContactsList;
+// export default ContactsList;
+export default memo(ContactsList);

@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, nanoid } from '@reduxjs/toolkit';
 
 const contactsInitialState = [
   { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
@@ -14,18 +14,28 @@ const contactsSlice = createSlice({
   initialState: contactsInitialState,
   // Об'єкт редюсерів
   reducers: {
-    addTask(state, action) {
-      state.push(action.payload);
+    addContact: {
+      reducer(state, action) {
+        state.push(action.payload);
+        // return [...state, action.payload];
+      },
+      prepare(newContact) {
+        return {
+          payload: {
+            id: nanoid(),
+            ...newContact,
+          },
+        };
+      },
     },
-    deleteTask(state, action) {
-      const index = state.findIndex(task => task.id === action.payload);
-      state.splice(index, 1);
+    deleteContact: (state, action) => {
+      return state.filter(contact => contact.id !== action.payload);
     },
   },
 });
 
 // Генератори екшенів
-const { addTask, deleteTask } = tasksSlice.actions;
+export const { addContact, deleteContact } = contactsSlice.actions;
 
 // Редюсер слайсу
-const tasksReducer = tasksSlice.reducer;
+export default contactsSlice.reducer;

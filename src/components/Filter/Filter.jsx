@@ -1,7 +1,19 @@
-import PropTypes from 'prop-types';
-import StyledFilter from './Filter.styled';
 
-const Filter = ({ handleFilterChange, filter }) => {
+import StyledFilter from './Filter.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { setFilter } from 'redux/filterSlice';
+
+const Filter = () => {
+
+  const filter = useSelector(state => state.filter) || '';
+  const dispatch = useDispatch();
+
+  const handleFilterChange = e => {
+    const target = e.target.value.trim();
+    dispatch(setFilter(target));
+  };
+
+
   return (
     <StyledFilter>
       Find contacts by name
@@ -15,9 +27,6 @@ const Filter = ({ handleFilterChange, filter }) => {
   );
 };
 
-Filter.propTypes = {
-  filter: PropTypes.string.isRequired,
-  handleFilterChange: PropTypes.func.isRequired,
-};
+
 
 export default Filter;
